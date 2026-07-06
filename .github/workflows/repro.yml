@@ -60,10 +60,10 @@ jobs:
           - name: mystmd 1.10.1 (npm release)
             source: npm
             expect: bug
-          - name: jupyter-book/mystmd main@cb9bae94
+          - name: jupyter-book/mystmd main@bde9e9c0
             source: github
             repo: jupyter-book/mystmd
-            ref: cb9bae94df488b615227514a73d5f1c6ea2c7723
+            ref: bde9e9c02d91e49c222b4adabf655981a225b86b
             expect: bug
           - name: coretl/mystmd fix/xref-identifier-case
             source: github
