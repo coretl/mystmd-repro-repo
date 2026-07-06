@@ -1,0 +1,8 @@
+version: 1
+project:
+  id: c2-local-target-case
+  title: Case-sensitive local target repro
+  plugins:
+    - plugin.mjs
+site:
+  template: null

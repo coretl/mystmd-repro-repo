@@ -1,0 +1,104 @@
+name: Reproduce case-sensitivity bugs
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  c1-intersphinx-dollar-anchor:
+    name: "C1 · ${{ matrix.name }} · expect ${{ matrix.expect }}"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: intersphinx 1.0.2 (npm release)
+            source: npm
+            expect: bug
+          - name: coretl/intersphinx fix/dollar-anchor-case
+            source: github
+            repo: coretl/intersphinx
+            ref: fix/dollar-anchor-case
+            expect: fixed
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install released intersphinx from npm
+        if: matrix.source == 'npm'
+        run: |
+          npm install --no-audit --no-fund intersphinx@1.0.2
+          echo "INTERSPHINX=$GITHUB_WORKSPACE/node_modules/.bin/intersphinx" >> "$GITHUB_ENV"
+      - name: Build intersphinx from source
+        if: matrix.source == 'github'
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ matrix.repo }}
+          ref: ${{ matrix.ref }}
+          path: intersphinx-src
+      - if: matrix.source == 'github'
+        run: |
+          cd intersphinx-src
+          npm install --no-audit --no-fund
+          npm run build
+          echo "INTERSPHINX=node $GITHUB_WORKSPACE/intersphinx-src/dist/intersphinx.cjs" >> "$GITHUB_ENV"
+      - name: List the vendored $-form inventory
+        run: |
+          cd c1-dollar-anchor-case
+          $INTERSPHINX list objects.inv --includes re.Match | tee output.txt
+      - name: Check the resolved anchor
+        run: node c1-dollar-anchor-case/check.mjs c1-dollar-anchor-case/output.txt ${{ matrix.expect }}
+
+  c2-mystmd-local-target-case:
+    name: "C2 · ${{ matrix.name }} · expect ${{ matrix.expect }}"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: mystmd 1.10.1 (npm release)
+            source: npm
+            expect: bug
+          - name: jupyter-book/mystmd main@cb9bae94
+            source: github
+            repo: jupyter-book/mystmd
+            ref: cb9bae94a4a4f66e4dc5c9c176b26cd6dccbeeae
+            expect: bug
+          - name: coretl/mystmd fix/xref-identifier-case
+            source: github
+            repo: coretl/mystmd
+            ref: fix/xref-identifier-case
+            expect: fixed
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install released mystmd from npm
+        if: matrix.source == 'npm'
+        run: |
+          npm install --no-audit --no-fund mystmd@1.10.1
+          echo "MYST=$GITHUB_WORKSPACE/node_modules/.bin/myst" >> "$GITHUB_ENV"
+      - name: Check out mystmd source
+        if: matrix.source == 'github'
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ matrix.repo }}
+          ref: ${{ matrix.ref }}
+          path: mystmd-src
+      - name: Build mystmd from source
+        if: matrix.source == 'github'
+        uses: oven-sh/setup-bun@v2
+      - if: matrix.source == 'github'
+        run: |
+          cd mystmd-src
+          bun install
+          npx turbo run build --filter=mystmd
+          echo "MYST=node $GITHUB_WORKSPACE/mystmd-src/packages/mystmd/dist/myst.cjs" >> "$GITHUB_ENV"
+      - name: Build the repro project
+        run: |
+          cd c2-local-target-case
+          $MYST build --all
+      - name: Check the resolved references
+        run: node c2-local-target-case/check.mjs c2-local-target-case/_build/site/content/index.json ${{ matrix.expect }}
