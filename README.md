@@ -3,7 +3,7 @@
 [![Reproduce case-sensitivity bugs](https://github.com/coretl/mystmd-repro-repo/actions/workflows/repro.yml/badge.svg)](https://github.com/coretl/mystmd-repro-repo/actions/workflows/repro.yml)
 
 Minimal reproducers for two independent bugs that break **case-sensitive
-cross-references** in MyST — the kind needed for Python API docs, where
+cross-references** in MyST, the kind needed for Python API docs, where
 `re.match` (a function) and `re.Match` (a class) are different objects that
 must be different link targets.
 
@@ -11,7 +11,7 @@ CI runs each reproducer as a matrix: against the released/upstream code
 (**expecting the bug**) and against a fixed branch (**expecting correct
 behaviour**). All jobs green means both bugs and both fixes are demonstrated.
 
-## C1 — `$` inventory anchors are expanded lowercased
+## C1: `$` inventory anchors are expanded lowercased
 
 - Issue: [jupyter-book/mystmd#1758](https://github.com/jupyter-book/mystmd/issues/1758)
 - Prior fix attempt: [continuous-foundation/intersphinx#5](https://github.com/continuous-foundation/intersphinx/pull/5)
@@ -19,13 +19,13 @@ behaviour**). All jobs green means both bugs and both fixes are demonstrated.
 
 A Sphinx v2 `objects.inv` row may abbreviate its uri with `$`, meaning
 "substitute the object name here". Sphinx expands it **verbatim** and only
-ever *writes* `$` when the anchor equals the name byte-for-byte — so the only
+ever *writes* `$` when the anchor equals the name byte-for-byte, so the only
 correct expansion is case-preserved, for **all** domains (including
 `std:term`: Sphinx publishes a capitalized glossary term as
 `Match std:term index.html#term-$` whose real HTML anchor is `#term-Match`).
 The `intersphinx` package expands `$` with
 `.toLowerCase().replace(/\s+/g, '-')`, so `re.Match` collapses onto
-`re.match` — for every case-distinct pair in every real Sphinx inventory,
+`re.match`, for every case-distinct pair in every real Sphinx inventory,
 including docs.python.org.
 
 `c1-dollar-anchor-case/` contains a 3-row `$`-form inventory
@@ -37,7 +37,7 @@ npx intersphinx list c1-dollar-anchor-case/objects.inv --includes re.Match
 # fixed branch:    py:class (re.Match) -> library/re.html#re.Match   ← matches Sphinx
 ```
 
-## C2 — resolved links discard the matched target's case
+## C2: resolved links discard the matched target's case
 
 - Fixed branch used here: [coretl/mystmd `fix/xref-identifier-case`](https://github.com/coretl/mystmd/tree/fix/xref-identifier-case)
 
