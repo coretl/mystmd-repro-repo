@@ -63,7 +63,7 @@ jobs:
           - name: jupyter-book/mystmd main@cb9bae94
             source: github
             repo: jupyter-book/mystmd
-            ref: cb9bae94a4a4f66e4dc5c9c176b26cd6dccbeeae
+            ref: cb9bae94df488b615227514a73d5f1c6ea2c7723
             expect: bug
           - name: coretl/mystmd fix/xref-identifier-case
             source: github
