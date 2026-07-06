@@ -13,8 +13,8 @@ behaviour**). All jobs green means both bugs and both fixes are demonstrated.
 
 ## C1: `$` inventory anchors are expanded lowercased
 
-- Issue: [jupyter-book/mystmd#1758](https://github.com/jupyter-book/mystmd/issues/1758)
-- Prior fix attempt: [continuous-foundation/intersphinx#5](https://github.com/continuous-foundation/intersphinx/pull/5)
+- Issues: [jupyter-book/mystmd#1758](https://github.com/jupyter-book/mystmd/issues/1758), [jupyter-book/mystmd#2955](https://github.com/jupyter-book/mystmd/issues/2955)
+- Fix PR: [continuous-foundation/intersphinx#6](https://github.com/continuous-foundation/intersphinx/pull/6) (supersedes [#5](https://github.com/continuous-foundation/intersphinx/pull/5))
 - Fixed branch used here: [coretl/intersphinx `fix/dollar-anchor-case`](https://github.com/coretl/intersphinx/tree/fix/dollar-anchor-case)
 
 A Sphinx v2 `objects.inv` row may abbreviate its uri with `$`, meaning
